@@ -8,7 +8,7 @@ uses
 resourcestring
   sCreatePipeMsg = 'Ошибка при создании "трубы" (Pipe).'#13#13'CreatePipe(FChildStdoutRd, FChildStdoutWr, saAttr, 0)';
   sDuplicateHandleMsg = 'Ошибка при создании копии хэндла.'#13#13'DuplicateHandle(GetCurrentProcess(), FChildStdoutRd, GetCurrentProcess(), @FChildStdoutRdDup, 0, False, DUPLICATE_SAME_ACCESS)';
-  sCreateChildProcessMsg = 'Ошибка при создании дочернего процесса.'#13#13'CreateChildProcess(ExeName, CommadLine, FChildStdoutWr)';
+  sCreateChildProcessMsg = 'Ошибка при создании дочернего процесса.'#13#13'CreateChildProcess(ExeName, CommandLine, FChildStdoutWr)';
 
 type
   ESetStdHandleErr = class(Exception);
@@ -22,9 +22,9 @@ type
     FChildStdinRd: THandle;
     FChildStdinWr: THandle;
   private
-    function CreateChildProcess(ExeName, CommadLine: String; StdIn: THandle; StdOut: THandle): Boolean;
+    function CreateChildProcess(ExeName, CommandLine: String; StdIn, StdOut: THandle): Boolean;
   public
-    constructor Create(ExeName, CommadLine: String);
+    constructor Create(ExeName, CommandLine: String);
     destructor Destroy; override;
     function ReadStrFromChild(Timeout: Integer = 1000): AnsiString;
     function WriteStrToChild(const Data: AnsiString): Boolean;
@@ -34,7 +34,7 @@ implementation
 
 { TChildProc }
 
-constructor TChildProc.Create(ExeName, CommadLine: String);
+constructor TChildProc.Create(ExeName, CommandLine: String);
 var
   StdoutRdTmp, StdinWrTmp: THandle;
   saAttr: TSecurityAttributes;
@@ -60,11 +60,11 @@ begin
   CloseHandle(StdoutRdTmp);
   CloseHandle(StdinWrTmp);
 
-  if not CreateChildProcess(ExeName, CommadLine, FChildStdinRd, FChildStdoutWr) then
+  if not CreateChildProcess(ExeName, CommandLine, FChildStdinRd, FChildStdoutWr) then
     raise ECreateChildProcessErr.CreateRes(@sCreateChildProcessMsg);
 end;
 
-function TChildProc.CreateChildProcess(ExeName, CommadLine: String; StdIn, StdOut: THandle): Boolean;
+function TChildProc.CreateChildProcess(ExeName, CommandLine: String; StdIn, StdOut: THandle): Boolean;
 var
   piProcInfo: TProcessInformation;
   siStartInfo: TStartupInfo;
@@ -78,7 +78,7 @@ begin
   siStartInfo.wShowWindow := SW_HIDE;
 
    Result := CreateProcess(nil,
-      PChar(ExeName + ' ' + CommadLine),
+      PChar(ExeName + ' ' + CommandLine),
       nil,
       nil,
       true,
@@ -126,10 +126,10 @@ begin
       end;
     until not Res;
 
-    Result := Trim(Result);
-  Except
+//    Result := Trim(Result);
+  except
   	Result := 'Read Err!';
-  End;
+  end;
 end;
 
 
@@ -140,7 +140,7 @@ var
 begin
 //  if Trim(Data) = '' then
 //    exit;
-  chBuf := PAnsiChar(Data + #13#10);
+  chBuf := PAnsiChar(Data + sLineBreak);
   BufSize := Length(chBuf);
   Result := WriteFile(FChildStdinWr, chBuf^, BufSize, dwWritten, nil);
   Result := Result and (BufSize = dwWritten);

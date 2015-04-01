@@ -101,7 +101,7 @@ procedure TFMain.AddToOutput;
 var
   Readed: string;
 begin
-  Readed := FChildProc.ReadStrFromChild(1000);
+  Readed := Trim(FChildProc.ReadStrFromChild(1000));
   if Readed = '' then
     exit;
   memConsole.Lines.Add(Readed);
@@ -117,6 +117,8 @@ end;
 
 procedure TFMain.ExecuteCommand(const aCommand: string);
 begin
+  if Trim(aCommand) = '' then
+    exit;
   FChildProc.WriteStrToChild(aCommand);
   AddToOutput;
   AddToHistory(aCommand);
@@ -149,6 +151,7 @@ begin
   FHistory.OnChange := HistoryChanged;
 
   FChildProc := TChildProc.Create('cmd.exe', '');
+  FChildProc.WriteStrToChild('echo off');
 //  FChildProc.WriteStrToChild('chcp 1251');
   AddToOutput;
 end;
@@ -166,8 +169,14 @@ begin
 end;
 
 function TFMain.GetCommand: string;
+var
+  Prompt: string;
 begin
-  Result := ReplaceStr(CurrentLine, GetPrompt, '');
+  Prompt := GetPrompt;
+  if Pos(Prompt, CurrentLine) = 0 then
+    Result := ''
+  else
+    Result := ReplaceStr(CurrentLine, Prompt, '');
 end;
 
 function TFMain.GetCurrentLine: string;

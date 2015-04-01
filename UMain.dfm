@@ -44,9 +44,6 @@ object FMain: TFMain
     Align = alLeft
     TabOrder = 0
     OnResize = pnlToolsResize
-    ExplicitLeft = 8
-    ExplicitTop = 8
-    ExplicitHeight = 41
     object Splitter1: TSplitter
       Left = 1
       Top = 311
@@ -65,7 +62,6 @@ object FMain: TFMain
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitHeight = 304
       object lbHistory: TListBox
         Left = 0
         Top = 0
@@ -122,10 +118,6 @@ object FMain: TFMain
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitLeft = 320
-    ExplicitTop = 96
-    ExplicitWidth = 185
-    ExplicitHeight = 41
     object memConsole: TMemo
       Left = 0
       Top = 0
@@ -143,10 +135,6 @@ object FMain: TFMain
       TabOrder = 0
       OnKeyDown = memConsoleKeyDown
       OnKeyPress = memConsoleKeyPress
-      ExplicitLeft = -165
-      ExplicitTop = 8
-      ExplicitWidth = 577
-      ExplicitHeight = 409
     end
   end
   object ilHideShow: TImageList
@@ -154,7 +142,7 @@ object FMain: TFMain
     Left = 48
     Top = 48
     Bitmap = {
-      494C010102000800080010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000C000C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
